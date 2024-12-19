@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VegRecipes</title>
+    <style>
+       body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f7f7f7;
+        }
+        h1 {
+            margin-top: 20px;
+        }
+        .search-bar {
+            margin: 20px;
+        }
+        .search-bar input {
+            padding: 10px;
+            width: 60%;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+        }
+        .recipes-container {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(150px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto; 
+        }
+        .recipe-card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease; 
+        }
+        .recipe-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+        .recipe-image {
+            width: 100%;
+            height: auto; 
+        }
+        .recipe-button {
+            background-color: #04AA6D;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            margin-bottom:10px; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            transition: background-color 0.3s ease, transform 0.2s ease; 
+        }
+        .recipe-button:hover {
+            background-color: #028a52; 
+            transform: scale(1.05); 
+        }
+        .details-container {
+            margin-top :20px ;
+           display:none; 
+        }
+        .details-container h2 {
+           margin-bottom :10px ; 
+       }
+       .details-container p {
+           margin :5px ; 
+       }
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+   .search-bar input {
+       width: 90%; /* Wider input on smaller screens */
+   }
+
+   .recipes-container {
+       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Adjust grid for smaller screens */
+   }
+}
+
+@media (max-width: 480px) {
+   h1 {
+       font-size: 1.5rem; /* Smaller heading on very small screens */
+   }
+
+   .recipe-button {
+       font-size: 0.9rem; /* Smaller button text on small screens */
+       padding: 8px; /* Smaller padding */
+   }
+}
+
+    </style>
+</head>
+<body>
+    <h1>Recipe Search</h1>
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search for recipes..." onkeyup="filterRecipes()">
+    </div>
+    <div class="recipes-container" id="recipesContainer">
+        
+        <div class="recipe-card" data-name="TamarindRice">
+            <img src="freepik__retouch__56535.png" alt="TamarindRice" class="recipe-image">
+            <button class="recipe-button" onclick="showDetails('TamarindRice')">Tamarind Rice</button>
+        </div>
+        <div class="recipe-card" data-name="AlooPosto">
+            <img src="top-view-indian-food-spices.jpg" alt="AlooPosto" class="recipe-image">
+            <button class="recipe-button" onclick="showDetails('AlooPosto')">Aloo Posto</button>
+        </div>
+        <div class="recipe-card" data-name="PaneerButterMasala">
+            <img src="massaman-curry-frying-pan-with-spices-cement-floor.jpg" alt="PaneerButterMasala" class="recipe-image">
+            <button class="recipe-button" onclick="showDetails('PaneerButterMasala')">Paneer Butter Masala</button>
+        </div>
+        <div class="recipe-card" data-name="PaniPuri">
+            <img src="top-view-chicken-nuggets-lettuce-fork-plate-salt-black-pepper-wooden-spoons-dark-table.jpg" alt="PaniPuri" class="recipe-image">
+            <button class="recipe-button" onclick="showDetails('PaniPuri')">Pani Puri</button>
+        </div>
+        <div class="recipe-card" data-name="Samosa">
+      <img src="deep-fried-samosas-dumplings-gourmet-appetizer-generated-by-ai.jpg" alt="Samosa" class="recipe-image">
+      <button class="recipe-button" onclick="showDetails('Samosa')">Samosa</button>
+    </div>
+    <div class="recipe-card" data-name="Noodles">
+      <img src="noodles.jpg" alt="Noodles" class="recipe-image">
+      <button class="recipe-button" onclick="showDetails('Noodles')">Noodles</button>
+    </div>
+    <div class="recipe-card" data-name="Friedrice">
+      <img src="steamed-rice-with-seafood-calamary-corns-carrot-peas-side-view.jpg" alt="Friedrice" class="recipe-image">
+      <button class="recipe-button" onclick="showDetails('Friedrice')">FriedRice</button>
+    </div>
+    <div class="recipe-card" data-name="MasalaDosa">
+      <img src="delicious-indian-dosa-composition.jpg" alt="MasalaDosa" class="recipe-image">
+      <button class="recipe-button" onclick="showDetails('MasalaDosa')">MasalaDosa</button>
+    </div>
+
+    </div>
+    <div class="details-container" id="detailsContainer" style="display:none;">
+       <h2 id="dishName"></h2>
+       <p id="ingredients"></p>
+       <p id="process"></p>
+    </div>
+
+    <script>
+        const recipeDetails = {
+    TamarindRice: {
+        ingredients: [
+            "Cooked Rice - 2 cups (preferably cooled)",
+            "Tamarind Pulp - 2 tablespoons",
+            "Water - 1/4 cup",
+            "Sesame Oil - 2 tablespoons",
+            "Mustard Seeds - 1 teaspoon",
+            "Dry Red Chilies - 2, broken",
+            "Curry Leaves - 8-10 leaves",
+            "Green Chilies - 2, slit",
+            "Asafoetida (Hing) - a pinch",
+            "Turmeric Powder - 1/4 teaspoon",
+            "Roasted Peanuts - 2 tablespoons",
+            "Chana Dal (Split Bengal Gram) - 1 tablespoon",
+            "Urad Dal (Split Black Gram) - 1 tablespoon",
+            "Salt - to taste",
+            "Jaggery - 1 teaspoon (optional, for a slight sweetness)"
+        ],
+        process: [
+            "Mix tamarind pulp with water to create a smooth solution.",
+            "In a pan, heat sesame oil over medium heat. Add mustard seeds and let them splutter.",
+            "Incorporate chana dal, urad dal, dry red chilies, green chilies, and curry leaves. Sauté until the dals turn golden brown.",
+            "Pour in the tamarind solution and mix well. Add turmeric powder, asafoetida, and salt.",
+            "Allow the mixture to simmer for 5-7 minutes until it thickens and the raw smell of tamarind disappears. Add jaggery if desired.",
+            "Add the cooked rice to the tamarind mixture and gently mix until evenly coated.",
+            "Toss in roasted peanuts and mix again.",
+            "Serve warm, optionally garnished with fresh coriander leaves."
+        ]
+    },
+    AlooPosto: {
+        ingredients: [
+            "Potatoes - 3 medium-sized, peeled and diced into cubes",
+            "Poppy Seeds (Khus Khus/Posto) - 4 tablespoons",
+            "Green Chilies - 3 to 4, slit",
+            "Mustard Oil - 3 tablespoons",
+            "Turmeric Powder - 1/4 teaspoon",
+            "Salt - to taste",
+            "Water - as needed"
+        ],
+        process: [
+            "Soak poppy seeds in warm water for 15-20 minutes; grind into a smooth paste.",
+            "Heat mustard oil in a pan until it reaches its smoking point; then reduce heat to medium.",
+            "Add diced potatoes to the pan with turmeric powder; sauté until golden on edges.",
+            "Add water (about 1/4 cup) and cover the pan; cook until potatoes are tender.",
+            "Lower heat and add poppy seed paste; mix well to coat potatoes evenly.",
+            "Add salt to taste; let simmer for 5-7 minutes until raw smell disappears.",
+            "Stir in slit green chilies before serving hot with steamed rice."
+        ]
+    },
+    PaneerButterMasala: {
+        ingredients: [
+            "Paneer (Cottage Cheese) - 200 grams, cut into cubes",
+            "Butter - 2 tablespoons",
+            "Oil - 1 tablespoon",
+            "Onion - 1 medium, finely chopped",
+            "Tomatoes - 3 medium, pureed",
+            "Ginger-Garlic Paste - 1 tablespoon",
+            "Cashews - 10-12, soaked in warm water and blended to a paste",
+            "Green Chilies - 2, slit (optional)",
+            "Turmeric Powder - 1/4 teaspoon",
+            "Red Chili Powder - 1 teaspoon",
+            "Coriander Powder - 1 teaspoon",
+            "Garam Masala - 1/2 teaspoon",
+            "Kasuri Methi (Dried Fenugreek Leaves) - 1 teaspoon",
+            "Fresh Cream - 2 tablespoons",
+            "Salt - to taste",
+            "Sugar - 1 teaspoon"
+        ],
+        process: [
+            "Heat butter and oil in a pan; add chopped onions and sauté until golden brown.",
+            "Stir in ginger-garlic paste; sauté until raw smell disappears.",
+            "Add tomato puree and cook until oil separates from the mixture.",
+            "Stir in turmeric powder, red chili powder, coriander powder, and salt; cook for another minute.",
+            "Incorporate cashew paste; cook for another few minutes while stirring continuously.",
+            "Pour in water as needed to adjust gravy consistency; let simmer for about 5 minutes.",
+            "Gently add paneer cubes; mix carefully to avoid breaking them.",
+            "Add sugar, garam masala, kasuri methi, and stir well before adding fresh cream.",
+            "Garnish with fresh coriander leaves; serve hot with naan or rice."
+        ]
+    },
+    PaniPuri: {
+        ingredients: [
+            "For the Puris:",
+            "Semolina (Sooji) - 1 cup",
+            "All-Purpose Flour (Maida) - 2 tablespoons",
+            "Salt - to taste",
+            "Water - as needed for kneading",
+            "Oil - for deep frying.",
+            "For the Pani (Spiced Water):",
+            "Tamarind Pulp - 2 tablespoons",
+            "Mint Leaves - 1/2 cup",
+            "Coriander Leaves - 1/2 cup",
+            "Green Chilies - 2 (adjust to taste)",
+            "Black Salt - 1 teaspoon",
+            "Roasted Cumin Powder - 1 teaspoon",
+            "Chaat Masala - 1 teaspoon",
+            "Sugar - 1/2 teaspoon",
+            "Salt - to taste",
+            "Cold Water - 4 cups",
+            "For the Filling:",
+            "Boiled Potatoes - 2 medium, mashed",
+            "Boiled Chickpeas or Black Gram - 1/2 cup",
+            "Onion - 1 small, finely chopped (optional)",
+            "Chaat Masala - 1/2 teaspoon",
+            "Salt - to taste"
+        ],
+        process: [
+            "Mix semolina, all-purpose flour, and salt in a bowl. Gradually add water and knead into a stiff dough. Cover and let it rest for 30 minutes.",
+            "Roll the dough into a thin sheet and cut small circles using a round cutter or a small lid. Heat oil in a deep pan and fry the circles until they puff up and turn golden brown. Drain on paper towels and let them cool.",
+            "Blend mint leaves, coriander leaves, green chilies, and tamarind pulp into a smooth paste. Mix this paste with cold water. Add black salt, roasted cumin powder, chaat masala, sugar, and salt. Stir well and chill in the refrigerator before serving.",
+            "In a bowl, mix mashed potatoes, boiled chickpeas, chaat masala, and adjust salt to taste. Add finely chopped onions if desired.",
+            "Gently crack open the top of a puri to make a hole. Fill with a spoonful of the potato-chickpea mixture. Pour the chilled pani into the puri.",
+            "Enjoy the burst of flavors as you eat them fresh!"
+        ]
+    },
+    
+    Samosa: {
+        ingredients: [
+            "For the Dough:",
+            "All-Purpose Flour (Maida) - 2 cups",
+            "Salt - 1/2 teaspoon",
+            "Carom Seeds (Ajwain) - 1/2 teaspoon (optional)",
+            "Oil - 4 tablespoons (for kneading)",
+            "Water - as needed for kneading.",
+            "For the Filling:",
+            "Potatoes - 4 medium, boiled and mashed",
+            "Green Peas - 1/2 cup (boiled)",
+            "Oil - 2 tablespoons",
+            "Cumin Seeds - 1 teaspoon",
+            "Ginger - 1 teaspoon, grated",
+            "Green Chilies - 2, finely chopped",
+            "Turmeric Powder - 1/4 teaspoon",
+            "Red Chili Powder - 1/2 teaspoon",
+            "Coriander Powder - 1 teaspoon",
+            "Garam Masala - 1/2 teaspoon",
+            "Dry Mango Powder (Amchur) - 1/2 teaspoon",
+            "Salt - to taste",
+            "Fresh Coriander Leaves - 2 tablespoons, chopped"
+        ],
+        process: [
+            "In a bowl, mix all-purpose flour, salt, and carom seeds. Add oil and mix until it resembles breadcrumbs. Gradually add water to form a stiff dough. Cover with a damp cloth and let it rest for 30 minutes.",
+            "Heat oil in a pan over medium heat. Add cumin seeds; once they splutter, add grated ginger and green chilies. Sauté for a minute before adding mashed potatoes and boiled peas.",
+            "Mix in turmeric powder, red chili powder, coriander powder, garam masala, dry mango powder, and salt. Cook for another 2-3 minutes while stirring continuously. Add chopped coriander leaves and let cool.",
+            "Divide dough into equal portions; roll each into thin ovals or circles. Cut each circle in half to form two semi-circles; fold each semi-circle into a cone shape sealing one edge with water.",
+            "Fill each cone with prepared filling; seal the top by pinching edges together.",
+            "Heat oil in a deep pan; fry samosas over medium heat until golden brown and crisp. Drain on paper towels and serve hot with mint or tamarind chutney."
+        ]
+    },
+    Noodles: {
+    ingredients: [
+        "Noodles - 200 grams (any type like penne, spaghetti, or fusilli)",
+        "Water - as needed for boiling",
+        "Salt - 1 teaspoon (for boiling pasta)",
+        "Olive Oil - 1 tablespoon (optional, to prevent sticking)",
+        "Olive Oil or Butter - 2 tablespoons",
+        "Garlic - 2 cloves, minced",
+        "Onion - 1 small, finely chopped",
+        "Tomatoes - 3 large, blended or finely chopped",
+        "Tomato Paste - 2 tablespoons (optional, for richer flavor)",
+        "Red Chili Flakes - 1 teaspoon (adjust to taste)",
+        "Mixed Italian Herbs - 1 teaspoon (or use oregano and basil)",
+        "Salt - to taste",
+        "Black Pepper Powder - 1/2 teaspoon",
+        "Heavy Cream or Milk - 1/4 cup (optional, for creamy sauce)",
+        "Grated Cheese (Parmesan or Mozzarella) - 1/4 cup (optional)",
+        "Fresh Basil Leaves - a few, for garnish"
+    ],
+    process: [
+        "Boil water in a large pot. Add salt and olive oil. Add the noodles and cook according to the package instructions until al dente (firm to the bite). Drain the noodles and rinse with cold water to stop the cooking process. Set aside.",
+        "Heat olive oil or butter in a pan over medium heat. Add minced garlic and sauté until fragrant. Then add chopped onions and sauté until they turn translucent.",
+        "Incorporate blended or chopped tomatoes into the pan and cook until the mixture thickens, about 5-7 minutes. Stir in tomato paste if using.",
+        "Add red chili flakes, mixed herbs, salt, and black pepper. If you prefer a creamy sauce, pour in heavy cream or milk at this stage and mix well.",
+        "Add the cooked noodles to the sauce and gently toss to coat evenly. Let it cook for an additional 2-3 minutes to allow flavors to blend.",
+        "Garnish with grated cheese and fresh basil leaves before serving hot. Enjoy with garlic bread or a side salad!"
+    ]
+}
+,
+
+    Friedrice: {
+        ingredients: [
+             "For the Rice:",
+             "Cooked Rice - 2 cups (preferably day-old rice for better texture)",
+             "Oil - 2 tablespoons",
+             "Salt - to taste",
+
+             "For the Vegetables:",
+             "Carrot - 1, finely chopped",
+             "Beans - 8-10, finely chopped",
+             "Capsicum (Bell Pepper) - 1, finely chopped",
+             "Green Peas - 1/2 cup (boiled or fresh)",
+             "Spring Onions - 2 stalks, chopped (white and green parts separated)",
+
+             "For the Seasoning:",
+             "Soy Sauce - 1 tablespoon",
+             "Vinegar - 1 teaspoon",
+             "Green Chili Sauce - 1 teaspoon (optional)",
+             "Black Pepper Powder - 1/2 teaspoon"
+        ],
+        process: [
+             'Preparation:',
+             'Cook rice ahead of time and let it cool; day-old rice works best as it’s less sticky.',
+             'Finely chop all vegetables and keep them ready.',
+
+             'Cooking the Fried Rice:',
+             'Heat oil in a large wok or pan over high heat.',
+             'Add white part of spring onions; sauté for about 30 seconds.',
+             'Add carrots, beans, and green peas; stir-fry for about 2-3 minutes.',
+             'Add capsicum; stir-fry for another minute without overcooking.',
+             'Push veggies to one side; pour soy sauce, vinegar, and chili sauce on other side.',
+             'Mix well before adding cooked rice; gently combine everything without breaking rice.',
+             'Sprinkle black pepper; toss everything together for about two minutes.',
+
+             'Serving:',
+             'Serve hot as is or pair with Manchurian or any favorite gravy dish.'
+        ]
+    },
+    MasalaDosa: {
+        ingredients: [
+              'For the Dosa Batter:',
+              'Rice - 1 cup',
+              'Urad Dal (Black Gram) - 1/4 cup',
+              'Fenugreek Seeds (Methi) - 1/2 teaspoon',
+              'Water – as needed for soaking and grinding',
+              'Salt – to taste',
+
+              'For the Potato Filling:',
+              'Potatoes – 4 medium, boiled and mashed',
+              'Onion – 1 large, finely chopped',
+              'Green Peas – 1/2 cup (optional)',
+              'Ghee or Oil – for cooking',
+              'Mustard Seeds – 1 teaspoon',
+              'Turmeric Powder – 1/2 teaspoon',
+              'Curry Leaves – few',
+              'Green Chilies – finely chopped',
+              'Ginger – grated',
+              'Fresh Coriander Leaves – chopped'
+        ],
+        process: [
+               'Step 1: Prepare Dosa Batter',
+               'Rinse rice & urad dal several times; soak rice & fenugreek seeds together for about four to six hours.',
+               'Drain soaked rice & fenugreek mixture; grind until smooth with enough water.',
+               'Combine ground rice & dal pastes in a bowl; add salt & let ferment overnight until fluffy.',
+
+               'Step 2: Prepare Potato Masala Filling',
+               'Heat ghee/oil in a pan; add mustard seeds & allow them to splutter.',
+               'Add curry leaves & sauté briefly before adding green chilies & grated ginger.',
+               'Stir in boiled potatoes & peas along with turmeric powder & mix well; cook for about five minutes.',
+
+               'Heat a non-stick pan; pour batter & spread evenly into thin circles.',
+               'Cook until edges lift slightly; place filling in center & fold over before serving hot.'
+        ]
+    }
+};
+
+        function filterRecipes() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.recipe-card');
+
+            cards.forEach(card => {
+                const recipeName = card.getAttribute('data-name').toLowerCase();
+                if (recipeName.includes(input)) {
+                    card.style.display = ""; // Show card
+                } else {
+                    card.style.display = "none"; // Hide card
+                }
+            });
+        }
+
+        function showDetails(recipeName) {
+          const details = recipeDetails[recipeName];
+          document.getElementById('dishName').innerText = recipeName.replace(/([A-Z])/g, ' $1').trim(); // Format name
+          document.getElementById('ingredients').innerText = details.ingredients.join('\n'); // Join ingredients with line breaks
+          document.getElementById('process').innerText = details.process.join('\n'); // Join process with line breaks
+          document.getElementById('detailsContainer').style.display = "block"; // Show details container
+       }
+    </script>
+
+    
+
+</body>
+</html>
+
+

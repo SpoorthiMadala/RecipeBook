@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #bbe4e9;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 37px;
+      padding: 10px;
+    }
+
+    .box {
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      padding: 40px;
+      text-align: center;
+      font-size: 1.5rem;
+      width: 400px;
+      height: 200px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease-in-out;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+    }
+
+    .box:hover {
+      transform: scale(1.05);
+    }
+
+    .veg {
+      background-image: url("delicious-food-table.jpg");
+    }
+
+    .nonveg {
+      background-image: url("side-view-stewed-meatballs-with-tomato-sauce-bell-pepper-spring-onion-mint-plate.jpg");
+    }
+
+    a {
+      background-color: #eee;
+      opacity:0.9;
+      border-radius: 15px;
+      padding: 20px 25px;
+      text-decoration: none;
+      font-size: 25px;
+      color: #000;
+    }
+
+    a:hover {
+      background-color: #fff;
+      color: SlateBlue;
+      border: 1px solid #32cd32;
+    }
+
+    h2 {
+      font-size: 3rem;
+      padding: 15px;
+      color: #333;
+      text-shadow: 5px 5px 5px #fdffcd;
+      margin:0rem 4rem 7rem 4rem;
+    }
+
+    @media (max-width: 768px) {
+      .box {
+        font-size: 1.2rem;
+        width: 150px;
+        height: 150px;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .box {
+        font-size: 1rem;
+        width: 120px;
+        height: 120px;
+      }
+
+      h2 {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h2>Veg or Non-Veg</h2>
+  <div class="container">
+    <div class="box veg">
+      <a href="vegitems.html">Veg</a>
+    </div>
+    <div class="box nonveg">
+      <a href="non-veg.html">Non-Veg</a>
+    </div>
+  </div>
+</body>
+
+</html>
+

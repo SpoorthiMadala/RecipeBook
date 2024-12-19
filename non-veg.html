@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NonVegRecipes</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f7f7f7;
+        }
+        h1 {
+            margin-top: 20px;
+        }
+        .search-bar {
+            margin: 20px;
+        }
+        .search-bar input {
+            padding: 10px;
+            width: 60%;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+        }
+        .recipes-container {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(150px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto; 
+        }
+        .recipe-card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease; 
+        }
+        .recipe-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+        .recipe-image {
+            width: 100%;
+            height: auto; 
+        }
+        .recipe-button {
+            background-color: #04AA6D;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            margin-bottom:10px; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            transition: background-color 0.3s ease, transform 0.2s ease; 
+        }
+        .recipe-button:hover {
+            background-color: #028a52; 
+            transform: scale(1.05); 
+        }
+        .details-container {
+            margin-top :20px ;
+           display:none; 
+        }
+        .details-container h2 {
+           margin-bottom :10px ; 
+       }
+       .details-container p {
+           margin :5px ; 
+       }
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+   .search-bar input {
+       width: 90%; /* Wider input on smaller screens */
+   }
+
+   .recipes-container {
+       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Adjust grid for smaller screens */
+   }
+}
+
+@media (max-width: 480px) {
+   h1 {
+       font-size: 1.5rem; /* Smaller heading on very small screens */
+   }
+
+   .recipe-button {
+       font-size: 0.9rem; /* Smaller button text on small screens */
+       padding: 8px; /* Smaller padding */
+   }
+}
+
+    </style>
+</head>
+<body>
+    <h1>Recipe Search</h1>
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search for recipes..." onkeyup="filterRecipes()">
+    </div>
+    <div class="recipes-container" id="recipesContainer">
+        
+        <div class="recipe-card" data-name="MuttonCurry">
+            <img src="mutton.jpg" alt="Mutton Curry" class="recipe-image">
+            <button class="recipe-button" onclick="showDetails('MuttonCurry')">Mutton Curry</button>
+        </div>
+        <div class="recipe-card" data-name="ChickenCurry">
+            <img src="chicken.jpg" alt="Chicken Curry" class="recipe-image">
+            <button class="recipe-button" onclick="showDetails('ChickenCurry')">Chicken Curry</button>
+        </div>
+        <div class="recipe-card" data-name="EggCurry">
+            <img src="egg.jpg" alt="Egg Curry" class="recipe-image">
+            <button class="recipe-button" onclick="showDetails('EggCurry')">Egg Curry</button>
+        </div>
+        <div class="recipe-card" data-name="ChickenTikka">
+            <img src="chickentikka.jpg" alt="Chicken Tikka" class="recipe-image">
+            <button class="recipe-button" onclick="showDetails('ChickenTikka')">Chicken Tikka</button>
+        </div>
+        <div class="recipe-card" data-name="EggFriedRice">
+        <img src="eggrice.jpg" alt="EggFriedRice" class="recipe-image">
+        <button class="recipe-button" onclick="showDetails('EggFriedRice')">Egg Fried Rice</button>
+    </div>
+    <div class="recipe-card" data-name="ButterChicken">
+        <img src="butterchicken.jpg" alt="ButterChicken" class="recipe-image">
+        <button class="recipe-button" onclick="showDetails('ButterChicken')">Butter Chicken</button>
+    </div>
+    <div class="recipe-card" data-name="FishFry">
+        <img src="fishfry.jpg" alt="FishFry" class="recipe-image">
+        <button class="recipe-button" onclick="showDetails('FishFry')">Fish Fry</button>
+    </div>
+    <div class="recipe-card" data-name="MuttonBiryani">
+        <img src="mbir.jpg" alt="MuttonBiryani" class="recipe-image">
+        <button class="recipe-button" onclick="showDetails('MuttonBiryani')">Mutton Biryani</button>
+    </div>
+    </div>
+
+    <div class="details-container" id="detailsContainer">
+       <h2 id="dishName"></h2>
+       <p id="ingredients"></p>
+       <p id="process"></p>
+   </div>
+
+   <script>
+       const recipeDetails = { 
+           MuttonCurry:{
+               ingredients: [
+                   "Mutton - 500 grams, cleaned and cut into pieces",
+                   "Onion - 2 large, finely chopped",
+                   "Tomato - 2 large, pureed",
+                   "Ginger-Garlic Paste - 1 tablespoon",
+                   "Yogurt - 1/2 cup",
+                   "Turmeric Powder - 1/2 teaspoon",
+                   "Red Chili Powder - 1 teaspoon",
+                   "Coriander Powder - 2 teaspoons",
+                   "Garam Masala - 1 teaspoon",
+                   "Oil - 3 tablespoons",
+                   "Salt - to taste"
+               ],
+               process: [
+                   "Heat oil in a pan, sauté onions until golden.",
+                   "Add ginger-garlic paste and cook until aromatic.",
+                   "Mix in spices and cook the mutton until tender.",
+                   "Add yogurt and simmer until the curry thickens."
+               ]
+           },
+           ChickenCurry:{
+               ingredients:[
+                   "Chicken - 500 grams, cleaned and cut into pieces",
+                   "Onion - 2 large, finely chopped",
+                   "Tomato - 2 large, pureed",
+                   "Ginger-Garlic Paste - 1 tablespoon",
+                   "Coconut Milk - 1 cup",
+                   "Turmeric Powder - 1/2 teaspoon",
+                   "Red Chili Powder - 1 teaspoon",
+                   "Coriander Powder - 2 teaspoons",
+                   "Curry Leaves - a handful",
+                   "Oil - 3 tablespoons",
+                   "Salt - to taste"
+               ],
+               process:[
+                   "Heat oil in a pan, sauté onions and curry leaves until golden.",
+                   "Add ginger-garlic paste and spices.",
+                   "Cook the chicken until it turns white.",
+                   "Stir in coconut milk and simmer until the chicken is tender."
+               ]
+           },
+           EggCurry: {
+        ingredients: [
+            "Boiled Eggs - 6, peeled",
+            "Onion - 2 large, finely chopped",
+            "Tomato - 2 large, pureed",
+            "Ginger-Garlic Paste - 1 tablespoon",
+            "Turmeric Powder - 1/4 teaspoon",
+            "Red Chili Powder - 1 teaspoon",
+            "Coriander Powder - 1 teaspoon",
+            "Cumin Seeds - 1 teaspoon",
+            "Oil - 2 tablespoons",
+            "Salt - to taste",
+            "Fresh Coriander Leaves - for garnish"
+        ],
+        process: [
+            "Heat oil in a pan over medium heat. Add cumin seeds and let them splutter.",
+            "Add chopped onions and sauté until they turn golden brown.",
+            "Stir in ginger-garlic paste and sauté for a minute until fragrant.",
+            "Add tomato puree along with turmeric, red chili powder, coriander powder, and salt. Cook until the oil separates from the mixture.",
+            "Gently add boiled eggs to the curry. You can cut them in half or leave them whole.",
+            "Simmer for about 5 minutes to allow flavors to meld.",
+            "Garnish with fresh coriander leaves and serve hot with rice or bread."
+        ]
+    },
+           ChickenTikka: {
+        ingredients: [
+            "Chicken Breast - 500 grams, boneless and cut into cubes",
+            "Yogurt - 1 cup (thick)",
+            "Ginger-Garlic Paste - 1 tablespoon",
+            "Red Chili Powder - 1 teaspoon",
+            "Turmeric Powder - 1/4 teaspoon",
+            "Cumin Powder - 1 teaspoon",
+            "Coriander Powder - 1 teaspoon",
+            "Lemon Juice - 2 tablespoons",
+            "Salt - to taste",
+            "Oil - for grilling"
+        ],
+        process: [
+            "In a bowl, mix yogurt with ginger-garlic paste, lemon juice, and spices.",
+            "Add chicken pieces to the marinade and coat well. Cover and refrigerate for at least 2 hours (preferably overnight).",
+            "Preheat your grill or oven to medium-high heat.",
+            "Thread marinated chicken onto skewers.",
+            "Grill or bake until cooked through and slightly charred, about 15-20 minutes.",
+            "Serve hot with mint chutney."
+        ]
+    },
+    
+           EggFriedRice: {
+        ingredients: [
+           // Ingredients for Egg Fried Rice
+           // Example:
+           // Cooked Rice – 2 cups,
+           // Eggs – 4,
+           // Spring Onion – chopped,
+           // Soy Sauce – to taste,
+           // Oil – for cooking,
+           // Salt – to taste
+           // Add specific quantities
+           // Here’s a complete example:
+           'Cooked Rice – 2 cups (preferably day-old)',
+           'Eggs – 4, beaten',
+           'Spring Onion – 1/2 cup, chopped',
+           'Garlic – 2 cloves, minced',
+           'Soy Sauce – 1 tablespoon',
+           'Oil – 2 tablespoons',
+           'Salt and Pepper – to taste'
+        ],
+        process: [
+           'Heat oil in a wok over medium-high heat.',
+           'Add minced garlic and sauté for about a minute.',
+           'Pour in beaten eggs; scramble them until fully cooked.',
+           'Add cooked rice; stir well to combine with eggs.',
+           'Pour soy sauce over the rice; mix thoroughly.',
+           'Add chopped spring onions; season with salt and pepper.',
+           'Serve hot as a side dish or main course.'
+        ]
+    },
+    ButterChicken: {
+        ingredients: [
+           // Ingredients for Butter Chicken
+           // Example:
+           // Chicken –500 grams,
+           // Butter –for cooking,
+           // Tomato Puree –1 cup,
+           // Cream –1/2 cup,
+           // Ginger-Garlic Paste –1 tablespoon,
+           // Red Chili Powder –to taste
+           
+           'Chicken –500 grams, boneless',
+           'Butter –3 tablespoons',
+           'Tomato Puree –1 cup',
+           'Cream –1/2 cup',
+           'Ginger-Garlic Paste –1 tablespoon',
+           'Red Chili Powder –1 teaspoon',
+           'Coriander Powder –1 teaspoon',
+           'Kasuri Methi (Dried Fenugreek Leaves) –1 teaspoon',
+           'Sugar –1 teaspoon',
+           'Salt –to taste'
+        ],
+        process: [
+          'In a pan, melt butter over medium heat.',
+          'Add ginger-garlic paste; sauté until fragrant.',
+          'Stir in tomato puree with spices; cook until oil separates.',
+          'Add chicken pieces; cover and cook until tender.',
+          'Pour in cream; simmer for a few minutes.',
+          'Garnish with kasuri methi before serving.'
+       ]
+    },
+    FishFry: {
+        ingredients: [
+           'Fish –500 grams, cleaned',
+           'Turmeric Powder –1/4 teaspoon',
+           'Red Chili Powder –1 teaspoon',
+           'Lemon Juice –1 tablespoon',
+           'Ginger-Garlic Paste –1 tablespoon',
+           'Rice Flour –for coating',
+           'Oil –for frying',
+           'Salt –to taste'
+        ],
+        process: [
+          'Marinate fish with turmeric powder, red chili powder, lemon juice, ginger-garlic paste, and salt for at least an hour.',
+          'Coat fish pieces with rice flour evenly.',
+          'Heat oil in a frying pan over medium heat.',
+          'Fry fish pieces until golden brown on both sides. Drain on paper towels.',
+          'Serve hot with lemon wedges.'
+       ]
+    },
+    MuttonBiryani: {
+        ingredients: [
+           // Ingredients for Mutton Biryani
+           // Example:
+           // Basmati Rice –2 cups,
+           // Mutton –500 grams,
+           // Yogurt –1/2 cup,
+           // Fried Onions –for garnishing,
+           
+           'Basmati Rice –2 cups',
+           'Mutton –500 grams, cleaned and cut into pieces',
+           'Yogurt –1/2 cup',
+           'Fried Onions –for garnishing (optional)',
+           'Spices (Cinnamon Stick, Cardamom Pods, Cloves) –as needed',
+           'Ginger-Garlic Paste –1 tablespoon',
+           'Mint Leaves –a handful',
+           'Oil or Ghee –3 tablespoons',
+           'Salt –to taste'
+        ],
+        process: [
+          // Process steps for Mutton Biryani
+          // Example:
+          // Heat oil/ghee in a pot,
+          
+          `Heat oil or ghee in a pot. Add whole spices (cinnamon stick, cardamom pods, cloves) and sauté briefly.`,
+          `Add sliced onions; cook until golden brown.`,
+          `Stir in ginger-garlic paste; add mutton pieces and sauté until browned.`,
+          `Mix in yogurt; cover and cook on low heat until mutton is tender.`,
+          `In another pot, boil water; add soaked basmati rice along with salt.`,
+          `Once rice is half-cooked, layer it over the mutton mixture. Garnish with mint leaves.`,
+          `Cover tightly and cook on low heat for about 20-25 minutes.`,
+          `Serve hot garnished with fried onions if desired.`
+       ]
+    }
+       };
+
+       function filterRecipes() {
+           const input = document.getElementById('searchInput').value.toLowerCase();
+           const cards = document.querySelectorAll('.recipe-card');
+           
+           cards.forEach(card => {
+               const recipeName = card.getAttribute('data-name').toLowerCase();
+               if (recipeName.includes(input)) {
+                   card.style.display = ""; // Show card
+               } else {
+                   card.style.display = "none"; // Hide card
+               }
+           });
+       }
+
+       function showDetails(recipeName) {
+          const details = recipeDetails[recipeName];
+          document.getElementById('dishName').innerText = recipeName.replace(/([A-Z])/g, ' $1').trim(); // Format name
+          document.getElementById('ingredients').innerText = details.ingredients.join('\n'); // Join ingredients with line breaks
+          document.getElementById('process').innerText = details.process.join('\n'); // Join process with line breaks
+          document.getElementById('detailsContainer').style.display = "block"; // Show details container
+       }
+   </script>
+</body>
+</html>
+
